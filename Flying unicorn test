@@ -1,0 +1,73 @@
+import pygame
+import sys
+import random
+
+# Ініціалізація Pygame
+pygame.init()
+
+# Параметри вікна
+WIDTH, HEIGHT = 400, 600
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Unicorn Adventure")
+
+# Колір
+WHITE = (255, 255, 255)
+
+# Параметри єдинорога
+unicorn_width, unicorn_height = 60, 60
+unicorn_x = 50
+unicorn_y = HEIGHT // 2 - unicorn_height // 2
+unicorn_vel = 5
+
+# Параметри гір
+mountain_width = 100
+mountain_height = random.randint(200, 400)
+mountain_x = WIDTH
+mountain_vel = 5
+
+# Функція малювання єдинорога
+def draw_unicorn():
+    unicorn_image = pygame.image.load('unicorn.png')  # Завантажте зображення єдинорога
+    unicorn_image = pygame.transform.scale(unicorn_image, (unicorn_width, unicorn_height))
+    WIN.blit(unicorn_image, (unicorn_x, unicorn_y))
+
+# Функція малювання гір
+def draw_mountain(mountain_height):
+    pygame.draw.rect(WIN, WHITE, (mountain_x, 0, mountain_width, mountain_height))
+    pygame.draw.rect(WIN, WHITE, (mountain_x, mountain_height + 150, mountain_width, HEIGHT - mountain_height - 150))
+
+# Головний цикл гри
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_SPACE]:
+        unicorn_y -= unicorn_vel
+
+    unicorn_y += unicorn_vel
+    mountain_x -= mountain_vel
+
+    # Логіка зіткнення
+    if unicorn_y <= 0 or unicorn_y + unicorn_height >= HEIGHT:
+        pygame.quit()
+        sys.exit()
+
+    if mountain_x <= 0:
+        mountain_x = WIDTH
+        mountain_height = random.randint(200, 400)
+
+    if unicorn_x + unicorn_width >= mountain_x and unicorn_x <= mountain_x + mountain_width:
+        if unicorn_y <= mountain_height or unicorn_y + unicorn_height >= mountain_height + 150:
+            pygame.quit()
+            sys.exit()
+
+    WIN.fill((0, 0, 0))
+    draw_unicorn()
+    draw_mountain(mountain_height)
+    pygame.display.update()
+
+# Завершення гри
+pygame.quit()
